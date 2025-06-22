@@ -257,79 +257,12 @@ header h1 {
     color: #e74c3c;
 }
 
-.results-breakdown {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 20px 0;
-    flex-wrap: wrap;
-}
-
-.breakdown-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px 20px;
-    border-radius: 8px;
-    min-width: 80px;
-}
-
-.breakdown-item.correct {
-    background: #d4edda;
-    color: #155724;
-}
-
-.breakdown-item.incorrect {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.breakdown-item.blank {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.breakdown-number {
-    font-size: 2rem;
-    font-weight: 600;
-    line-height: 1;
-}
-
-.breakdown-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-top: 5px;
-}
-
 #detailed-results {
     background: white;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     margin-bottom: 30px;
-}
-
-.section-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 25px 0 15px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid;
-}
-
-.section-title.correct {
-    color: #27ae60;
-    border-bottom-color: #27ae60;
-}
-
-.section-title.incorrect {
-    color: #e74c3c;
-    border-bottom-color: #e74c3c;
-}
-
-.section-title.blank {
-    color: #f39c12;
-    border-bottom-color: #f39c12;
 }
 
 .result-item {
@@ -347,11 +280,6 @@ header h1 {
 .result-item.incorrect {
     background: #f8d7da;
     border-left-color: #e74c3c;
-}
-
-.result-item.blank {
-    background: #fff3cd;
-    border-left-color: #f39c12;
 }
 
 .result-question {
