@@ -1,4 +1,3 @@
-
 /**
  * Aplicació de tests per a oposicions Mossos d'Esquadra
  * JavaScript pur sense frameworks
@@ -6344,29 +6343,38 @@ function submitTest() {
  */
 function calculateResults() {
     let correct = 0;
+    let incorrect = 0;
+    let blank = 0;
     let total = currentQuestions.length;
     let detailed = [];
     
     currentQuestions.forEach(question => {
         const userAnswer = userAnswers[question.id];
         let isCorrect = false;
+        let isBlank = false;
         let userAnswerText = '';
         
         if (userAnswer === undefined) {
             userAnswerText = 'Sense resposta';
             isCorrect = false;
+            isBlank = true;
+            blank++;
         } else {
             userAnswerText = question.options[userAnswer];
             isCorrect = userAnswer === question.correct;
+            if (isCorrect) {
+                correct++;
+            } else {
+                incorrect++;
+            }
         }
-        
-        if (isCorrect) correct++;
         
         detailed.push({
             question: question.question,
             userAnswer: userAnswerText,
             correctAnswer: question.options[question.correct],
-            isCorrect: isCorrect
+            isCorrect: isCorrect,
+            isBlank: isBlank
         });
     });
     
@@ -6374,6 +6382,8 @@ function calculateResults() {
     
     return {
         correct,
+        incorrect,
+        blank,
         total,
         percentage,
         detailed
@@ -6393,27 +6403,79 @@ function showResults(results) {
     
     scoreSummary.innerHTML = `
         <div class="score ${scoreClass}">${results.percentage}%</div>
-        <p>Has encertat <strong>${results.correct}</strong> de <strong>${results.total}</strong> preguntes</p>
+        <div class="results-breakdown">
+            <div class="breakdown-item correct">
+                <span class="breakdown-number">${results.correct}</span>
+                <span class="breakdown-label">Correctes</span>
+            </div>
+            <div class="breakdown-item incorrect">
+                <span class="breakdown-number">${results.incorrect}</span>
+                <span class="breakdown-label">Incorrectes</span>
+            </div>
+            <div class="breakdown-item blank">
+                <span class="breakdown-number">${results.blank}</span>
+                <span class="breakdown-label">En blanc</span>
+            </div>
+        </div>
+        <p>Total: <strong>${results.total}</strong> preguntes</p>
     `;
     
-    // Resultats detallats
+    // Resultats detallats separats per categories
     const detailedResults = document.getElementById('detailed-results');
-    let detailedHTML = '<h3>Revisió detallada:</h3>';
+    let detailedHTML = '';
     
-    results.detailed.forEach((item, index) => {
-        const statusClass = item.isCorrect ? 'correct' : 'incorrect';
-        const statusText = item.isCorrect ? '✓ Correcta' : '✗ Incorrecta';
-        
-        detailedHTML += `
-            <div class="result-item ${statusClass}">
-                <div class="result-question">${index + 1}. ${item.question}</div>
-                <div class="result-answer">
-                    <strong>La teva resposta:</strong> ${item.userAnswer} ${statusText}
-                    ${!item.isCorrect ? `<br><strong>Resposta correcta:</strong> ${item.correctAnswer}` : ''}
+    // Preguntes correctes
+    const correctItems = results.detailed.filter(item => item.isCorrect);
+    if (correctItems.length > 0) {
+        detailedHTML += '<h3 class="section-title correct">✓ Preguntes correctes (' + correctItems.length + ')</h3>';
+        correctItems.forEach((item, index) => {
+            const originalIndex = results.detailed.indexOf(item) + 1;
+            detailedHTML += `
+                <div class="result-item correct">
+                    <div class="result-question">${originalIndex}. ${item.question}</div>
+                    <div class="result-answer">
+                        <strong>La teva resposta:</strong> ${item.userAnswer} ✓
+                    </div>
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    }
+    
+    // Preguntes incorrectes
+    const incorrectItems = results.detailed.filter(item => !item.isCorrect && !item.isBlank);
+    if (incorrectItems.length > 0) {
+        detailedHTML += '<h3 class="section-title incorrect">✗ Preguntes incorrectes (' + incorrectItems.length + ')</h3>';
+        incorrectItems.forEach((item, index) => {
+            const originalIndex = results.detailed.indexOf(item) + 1;
+            detailedHTML += `
+                <div class="result-item incorrect">
+                    <div class="result-question">${originalIndex}. ${item.question}</div>
+                    <div class="result-answer">
+                        <strong>La teva resposta:</strong> ${item.userAnswer} ✗
+                        <br><strong>Resposta correcta:</strong> ${item.correctAnswer}
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    // Preguntes en blanc
+    const blankItems = results.detailed.filter(item => item.isBlank);
+    if (blankItems.length > 0) {
+        detailedHTML += '<h3 class="section-title blank">○ Preguntes deixades en blanc (' + blankItems.length + ')</h3>';
+        blankItems.forEach((item, index) => {
+            const originalIndex = results.detailed.indexOf(item) + 1;
+            detailedHTML += `
+                <div class="result-item blank">
+                    <div class="result-question">${originalIndex}. ${item.question}</div>
+                    <div class="result-answer">
+                        <strong>No vas respondre aquesta pregunta</strong>
+                        <br><strong>Resposta correcta:</strong> ${item.correctAnswer}
+                    </div>
+                </div>
+            `;
+        });
+    }
     
     detailedResults.innerHTML = detailedHTML;
     
